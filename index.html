@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Login</title>
+</head>
+<body>
+    <h1>Login with Social Media</h1>
+
+    <!-- Facebook Login Button -->
+    <button id="fb-login-button">Login with Facebook</button>
+
+    <!-- LinkedIn Login Button -->
+    <button id="li-login-button">Login with LinkedIn</button>
+
+    <!-- Facebook SDK Script -->
+    <script src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <script>
+        // Initialize the Facebook SDK
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : 'YOUR_FACEBOOK_APP_ID', // Replace with your Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v12.0'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        // Load the Facebook SDK asynchronously
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // Facebook login function
+        document.getElementById('fb-login-button').onclick = function() {
+            FB.login(function(response) {
+                if (response.authResponse) {
+                    console.log('Facebook login successful:', response);
+                } else {
+                    console.log('User cancelled login or did not fully authorize.');
+                }
+            }, {scope: 'public_profile,email'});
+        };
+    </script>
+
+    <!-- LinkedIn SDK Script -->
+    <script type="text/javascript">
+        // Load LinkedIn SDK
+        function loadLinkedInSDK() {
+            const script = document.createElement('script');
+            script.src = 'https://platform.linkedin.com/in.js';
+            script.type = 'text/javascript';
+            script.async = true;
+            document.body.appendChild(script);
+        }
+
+        loadLinkedInSDK();
+
+        // LinkedIn login function
+        document.getElementById('li-login-button').onclick = function() {
+            IN.User.authorize(function() {
+                IN.API.Raw("/people/~:(id,first-name,last-name,email-address)").result(function(response) {
+                    console.log('LinkedIn login successful:', response);
+                }).error(function(error) {
+                    console.log('LinkedIn login error:', error);
+                });
+            });
+        };
+    </script>
+</body>
+</html>
