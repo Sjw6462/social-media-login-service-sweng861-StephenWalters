@@ -7,7 +7,7 @@
 
     <!-- LinkedIn SDK -->
     <script type="text/javascript" src="https://platform.linkedin.com/in.js">
-        api_key: 78tk4qtmqcm77m  <!-- Replace with your LinkedIn Client ID -->
+        api_key: 78tk4qtmqcm77m  <!-- LinkedIn Client ID -->
         authorize: true
         onLoad: onLinkedInLoad
     </script>
@@ -31,7 +31,7 @@
         // Facebook SDK Initialization
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '910567587948158',  // Replace with your Facebook App ID
+                appId      : '910567587948158',  // Facebook App ID
                 cookie     : true,
                 xfbml      : true,
                 version    : 'v12.0'  // Use correct Facebook API version
@@ -58,12 +58,17 @@
             console.log('Facebook login status:', response);
             if (response.status === 'connected') {
                 console.log('Successfully logged in with Facebook');
-                // Fetch additional user data after login
-                FB.api('/me', {fields: 'name,email,picture'}, function(userInfo) {
-                    console.log('Facebook User Info:', userInfo);
+                // Optionally, retrieve user info or redirect user
+                FB.api('/me', { fields: 'id,name,email' }, function(response) {
+                    console.log('Logged in user:', response);
+                    // Redirect or handle user data here
                 });
+            } else if (response.status === 'not_authorized') {
+                console.log('User is logged in to Facebook but has not authorized the app');
+                // Prompt user to authorize the app
             } else {
-                console.log('User not logged in');
+                console.log('User is not logged into Facebook');
+                // Prompt user to log in
             }
         }
 
@@ -78,8 +83,9 @@
 
         function onLinkedInLogin() {
             IN.User.authorize(function() {
-                IN.API.Raw("/me").result(function(profile) {
+                IN.API.Raw("/people/~").result(function(profile) {
                     console.log('LinkedIn Profile:', profile);  // Log the LinkedIn profile data
+                    // Handle the LinkedIn profile data, e.g., redirect or fetch additional info
                 }).error(function(error) {
                     console.log('LinkedIn login error:', error);
                 });
