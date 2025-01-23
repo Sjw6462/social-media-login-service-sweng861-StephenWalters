@@ -3,11 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Social Media Login Service</title>
+    
+    <!-- LinkedIn SDK -->
     <script type="text/javascript" src="https://platform.linkedin.com/in.js">
         api_key: 78tk4qtmqcm77m  <!-- LinkedIn Client ID -->
         authorize: true
         onLoad: onLinkedInLoad
+    </script>
+    
+    <!-- Facebook SDK -->
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '910567587948158',  // Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v12.0'  // Use correct Facebook API version
+            });
+            FB.AppEvents.logPageView();   
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     </script>
 </head>
 <body>
@@ -26,25 +50,6 @@
     <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
 
     <script>
-        // Facebook SDK Initialization
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '910567587948158',  // Facebook App ID
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v12.0'  // Use correct Facebook API version
-            });
-            FB.AppEvents.logPageView();   
-        };
-
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
         // Facebook Login Status Check
         function checkLoginState() {
             FB.getLoginStatus(function(response) {
