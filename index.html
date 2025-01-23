@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Login Service</title>
+    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
+        api_key: 78tk4qtmqcm77m  <!-- LinkedIn Client ID -->
+        authorize: true
+        onLoad: onLinkedInLoad
+    </script>
 </head>
 <body>
 
@@ -15,13 +20,19 @@
         onlogin="checkLoginState();">
     </fb:login-button>
 
+    <h2>Login with LinkedIn</h2>
+
+    <!-- LinkedIn Login Button -->
+    <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
+
     <script>
+        // Facebook SDK Initialization
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '910567587948158',  // Make sure your Facebook App ID is correct
+                appId      : '910567587948158',  // Facebook App ID
                 cookie     : true,
                 xfbml      : true,
-                version    : 'v12.0'  // Use the correct Facebook API version here
+                version    : 'v12.0'  // Use correct Facebook API version
             });
             FB.AppEvents.logPageView();   
         };
@@ -34,6 +45,7 @@
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
+        // Facebook Login Status Check
         function checkLoginState() {
             FB.getLoginStatus(function(response) {
                 statusChangeCallback(response);
@@ -44,11 +56,28 @@
             console.log('Facebook login status:', response);
             if (response.status === 'connected') {
                 console.log('Successfully logged in with Facebook');
-                // Optionally, you can retrieve user information or redirect the user
+                // Optionally, retrieve user info or redirect user
             } else {
                 console.log('User not logged in');
-                // You could display a message or prompt the user to log in
+                // Prompt user to log in or display a message
             }
+        }
+
+        // LinkedIn SDK Initialization and Login
+        function onLinkedInLoad() {
+            IN.Event.on(IN, 'systemReady', onLinkedInReady);
+        }
+
+        function onLinkedInReady() {
+            console.log("LinkedIn SDK is ready!");
+        }
+
+        function onLinkedInLogin() {
+            IN.User.authorize(function() {
+                IN.API.Raw("/people/~").result(function(profile) {
+                    console.log(profile);  // Log the LinkedIn profile data
+                });
+            });
         }
     </script>
 
