@@ -18,10 +18,10 @@
     <script>
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '910567587948158',  <!-- Replace with your Facebook App ID -->
+                appId      : '910567587948158',  // Make sure your Facebook App ID is correct
                 cookie     : true,
                 xfbml      : true,
-                version    : 'v12.0'  <!-- Replace with your preferred API version -->
+                version    : 'v12.0'  // Use the correct Facebook API version here
             });
             FB.AppEvents.logPageView();   
         };
@@ -44,10 +44,10 @@
             console.log('Facebook login status:', response);
             if (response.status === 'connected') {
                 console.log('Successfully logged in with Facebook');
-                // You can also redirect to another page or show user info here
+                // Optionally, you can retrieve user information or redirect the user
             } else {
                 console.log('User not logged in');
-                // You can ask the user to log in if not logged in
+                // You could display a message or prompt the user to log in
             }
         }
     </script>
