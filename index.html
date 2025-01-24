@@ -20,7 +20,7 @@
                 appId      : '910567587948158',  // Your app ID here
                 cookie     : true,
                 xfbml      : true,
-                version    : 'v22.0'  // Use the latest version of the API
+                version    : 'v15.0'  // Use the latest version of the API
             });
 
             // Check the login status when the page loads
@@ -47,8 +47,13 @@
             if (response.status === 'connected') {
                 // Logged into Facebook, get the user's email
                 FB.api('/me', {fields: 'email'}, function(response) {
-                    console.log('User email:', response.email);
-                    document.getElementById('email').innerText = 'Email: ' + response.email;
+                    if (response && response.email) {
+                        console.log('User email:', response.email);
+                        document.getElementById('email').innerText = 'Email: ' + response.email;
+                    } else {
+                        console.log('Email not found or permission denied.');
+                        document.getElementById('email').innerText = 'Email permission denied or email not available.';
+                    }
                 });
             } else {
                 document.getElementById('email').innerText = 'Please log in to Facebook.';
