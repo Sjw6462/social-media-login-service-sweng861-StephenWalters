@@ -79,6 +79,26 @@
             // OAuth request with redirect_uri pointing to the same URL you added in the LinkedIn Developer Console
             window.location.href = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78tk4qtmqcm77m&redirect_uri=https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/&state=xyz";
         }
+
+        // Handle the OAuth callback (this is the redirect URL you set in LinkedIn Developer Console)
+        function handleLinkedInCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');  // Get the authorization code from URL
+
+            if (code) {
+                console.log('Authorization code:', code);
+                // Here you can send this code to your server to exchange for an access token
+                // For now, let's just log it to the console
+            } else {
+                console.log('No authorization code found.');
+            }
+        }
+
+        // Check if we are on the callback page
+        if (window.location.search.includes('code=')) {
+            handleLinkedInCallback();  // Handle the callback when it contains 'code'
+        }
+
     </script>
 
 </body>
