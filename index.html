@@ -78,15 +78,16 @@
     console.log('Initiating LinkedIn login...');
     const clientId = '78tk4qtmqcm77m';
     const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
-    
-    // Corrected scopes to ensure compatibility
-    const scope = 'r_liteprofile r_emailaddress openid'; // Ensure these scopes are included properly
+
+    // Updated scopes to align with your app's configuration
+    const scope = 'openid profile email'; // Include only the scopes you see in the developer console
 
     // Authorization request
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
     console.log('Redirecting to:', authUrl);
     window.location.href = authUrl;
 }
+
 
     </script>
 
