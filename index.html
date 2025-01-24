@@ -75,12 +75,34 @@
         }
 
         function onLinkedInLogin() {
+            // Request the necessary permissions (openid, profile, email)
             IN.User.authorize(function() {
+                // After successful login, retrieve the ID token
                 IN.API.Raw("/people/~").result(function(profile) {
-                    console.log(profile);  // Log the LinkedIn profile data
+                    console.log('LinkedIn profile:', profile);
+
+                    // Optionally, retrieve email and profile information via OpenID Connect
+                    getLinkedInProfile();
                 }).error(function(error) {
                     console.log('LinkedIn login error:', error);
                 });
+            });
+        }
+
+        // Fetch LinkedIn profile using OpenID Connect
+        function getLinkedInProfile() {
+            // Make an API call to get the user's profile
+            IN.API.Raw("/v2/me").result(function(profile) {
+                console.log('LinkedIn Profile Information:', profile);
+
+                // Get email using OpenID Connect (requires permissions: email, profile)
+                IN.API.Raw("/v2/emailAddress?q=members&projection=(elements*(handle~))").result(function(emailResponse) {
+                    console.log('LinkedIn Email:', emailResponse);
+                }).error(function(error) {
+                    console.log('Error fetching email:', error);
+                });
+            }).error(function(error) {
+                console.log('Error fetching LinkedIn profile:', error);
             });
         }
     </script>
