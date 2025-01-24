@@ -1,0 +1,26 @@
+{
+  "name": "social-media-login-service-sweng861-stephenwalters",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sjw6462/social-media-login-service-sweng861-StephenWalters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sjw6462/social-media-login-service-sweng861-StephenWalters/issues"
+  },
+  "homepage": "https://github.com/Sjw6462/social-media-login-service-sweng861-StephenWalters#readme",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
