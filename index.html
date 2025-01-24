@@ -11,16 +11,16 @@
         authorize: true
         onLoad: onLinkedInLoad
     </script>
-
-    <!-- Facebook SDK -->
-    <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
 
     <h2>Login with Facebook</h2>
 
     <!-- Facebook Login Button -->
-    <button onclick="onFacebookLogin()">Log in with Facebook</button>
+    <fb:login-button 
+        scope="public_profile,email" 
+        onlogin="checkLoginState();">
+    </fb:login-button>
 
     <h2>Login with LinkedIn</h2>
 
@@ -31,30 +31,43 @@
         // Facebook SDK Initialization
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '910567587948158',  // Facebook App ID
+                appId      : '910567587948158',  // Your Facebook App ID
                 cookie     : true,
                 xfbml      : true,
-                version    : 'v12.0'  // Use correct Facebook API version
+                version    : 'v12.0'  // Ensure correct Facebook API version
             });
             FB.AppEvents.logPageView();   
         };
 
-        // Facebook Login function
-        function onFacebookLogin() {
-            console.log('Initiating Facebook login...');
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
 
-            FB.login(function(response) {
-                if (response.authResponse) {
-                    console.log('Successfully logged in with Facebook');
-                    // You can now use response.authResponse to access the access token
-                    FB.api('/me', { fields: 'id,name,email,picture' }, function(userInfo) {
-                        console.log('Facebook user info:', userInfo);
-                        // Use this user data as needed, for example, redirect or store in a session
-                    });
-                } else {
-                    console.log('User canceled login or did not fully authorize');
-                }
-            }, {scope: 'public_profile,email'});  // Requesting profile and email
+        // Facebook Login Status Check
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                statusChangeCallback(response);
+            });
+        }
+
+        function statusChangeCallback(response) {
+            console.log('Facebook login status:', response);
+            if (response.status === 'connected') {
+                console.log('Successfully logged in with Facebook');
+                
+                // Retrieve user information
+                FB.api('/me', { fields: 'id,name,email,picture' }, function(userInfo) {
+                    console.log('User Info:', userInfo);
+                    alert(`Welcome ${userInfo.name}!`);
+                });
+
+            } else {
+                console.log('User not logged in');
+            }
         }
 
         // LinkedIn SDK Initialization and Login
@@ -70,16 +83,15 @@
             console.log('Initiating LinkedIn login...');
             const clientId = '78tk4qtmqcm77m';
             const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
-            
-            // Corrected scopes to ensure compatibility
-            const scope = 'r_liteprofile r_emailaddress openid'; // Ensure these scopes are included properly
+
+            // Updated scopes to align with your app's configuration
+            const scope = 'openid profile email';
 
             // Authorization request
             const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
             console.log('Redirecting to:', authUrl);
             window.location.href = authUrl;
         }
-
     </script>
 
 </body>
