@@ -74,31 +74,18 @@
             console.log("LinkedIn SDK is ready!");
         }
 
-        // Updated LinkedIn login function with the redirect URL
         function onLinkedInLogin() {
-            // OAuth request with redirect_uri pointing to the same URL you added in the LinkedIn Developer Console
-            window.location.href = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78tk4qtmqcm77m&redirect_uri=https%3A%2F%2Fsjw6462.github.io%2Fsocial-media-login-service-sweng861-StephenWalters%2F";
+            // Authorization request with OpenID Connect and profile/email scopes
+            IN.User.authorize(function() {
+                // Use the LinkedIn API to get the user's profile info (name, email, picture)
+                IN.API.Raw("/people/~:(id,first-name,last-name,email-address,picture-url)").result(function(profile) {
+                    console.log('LinkedIn Profile:', profile);  // Log the LinkedIn profile data
+                    // You can also handle the profile data here (e.g., display user details or redirect)
+                }).error(function(error) {
+                    console.log('LinkedIn login error:', error);
+                });
+            });
         }
-
-        // Handle the OAuth callback (this is the redirect URL you set in LinkedIn Developer Console)
-        function handleLinkedInCallback() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');  // Get the authorization code from URL
-
-            if (code) {
-                console.log('Authorization code:', code);
-                // Here you can send this code to your server to exchange for an access token
-                // For now, let's just log it to the console
-            } else {
-                console.log('No authorization code found.');
-            }
-        }
-
-        // Check if we are on the callback page
-        if (window.location.search.includes('code=')) {
-            handleLinkedInCallback();  // Handle the callback when it contains 'code'
-        }
-
     </script>
 
 </body>
