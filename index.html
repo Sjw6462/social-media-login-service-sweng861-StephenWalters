@@ -16,13 +16,13 @@
 
   <!-- Load the Facebook SDK -->
   <script>
-    // Initialize Facebook SDK
+    // Initialize Facebook SDK with version 22.0
     window.fbAsyncInit = function() {
       FB.init({
-        appId: '910567587948158', // Facebook App ID
-        cookie: true,
-        xfbml: true,
-        version: 'v17.0' // Use the latest Graph API version
+        appId      : '910567587948158', // Your actual Facebook App ID
+        cookie     : true,               // Enable cookies to allow the server to access the session
+        xfbml      : true,               // Parse social plugins on this page
+        version    : 'v22.0'             // Use version 22.0 of the Facebook Graph API
       });
 
       console.log('Facebook SDK initialized.');
@@ -41,22 +41,27 @@
     function loginWithFacebook() {
       FB.login(function(response) {
         if (response.authResponse) {
-          console.log('Fetching your Facebook information....');
-          FB.api('/me?fields=name,email', function(user) {
-            if (user.email) {
-              console.log(`Hello, ${user.name}! Your email is ${user.email}.`);
+          console.log('User logged in');
+          
+          // Fetch user details, including email
+          FB.api('/me?fields=email,name', function(response) {
+            if (response.email) {
+              console.log('User email:', response.email);
+              // Handle the user's email here
               sessionStorage.setItem('facebook_token', response.authResponse.accessToken);
               document.getElementById('user-info').innerText = 
-                `Facebook: Welcome, ${user.name}! Your email is ${user.email}.`;
+                `Facebook: Welcome, ${response.name}! Your email is ${response.email}.`;
             } else {
-              console.log(`Hello, ${user.name}! Your email is undefined.`);
+              console.log('Email is not available.');
+              // Optionally, handle cases where email is missing
               alert('We couldn’t access your Facebook email address. Please allow email access during login.');
             }
           });
         } else {
+          console.log('User canceled login');
           alert('Facebook login failed or was canceled.');
         }
-      }, { scope: 'email' }); // Request email permission
+      }, { scope: 'email' }); // Request 'email' permission
     }
   </script>
 
