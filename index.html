@@ -22,7 +22,7 @@
         appId: '910567587948158', // Facebook App ID
         cookie: true,
         xfbml: true,
-        version: 'v22.0' // Use the latest Graph API version
+        version: 'v17.0' // Use the latest Graph API version
       });
 
       console.log('Facebook SDK initialized.');
@@ -62,4 +62,43 @@
 
   <!-- LinkedIn SDK -->
   <script>
-    
+    const linkedInClientId = '78tk4qtmqcm77m'; // LinkedIn Client ID
+    const linkedInRedirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/'; // LinkedIn Redirect URI
+
+    function loginWithLinkedIn() {
+      const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${linkedInClientId}&redirect_uri=${encodeURIComponent(linkedInRedirectUri)}&scope=r_liteprofile%20r_emailaddress`;
+      window.location.href = linkedInAuthUrl; // Redirect to LinkedIn login page
+    }
+
+    // Handle LinkedIn callback
+    async function handleLinkedInCallback() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        try {
+          const response = await fetch('YOUR_BACKEND_API_ENDPOINT', { // Replace with your backend endpoint
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code, redirectUri: linkedInRedirectUri })
+          });
+          const data = await response.json();
+          if (data.accessToken) {
+            sessionStorage.setItem('linkedin_token', data.accessToken);
+            document.getElementById('user-info').innerText = `LinkedIn: Welcome! Access Token Saved.`;
+          } else {
+            throw new Error('Failed to fetch LinkedIn access token.');
+          }
+        } catch (error) {
+          console.error('LinkedIn login error:', error);
+          alert('Failed to log in with LinkedIn.');
+        }
+      }
+    }
+
+    // Call handleLinkedInCallback when the page loads to process LinkedIn login
+    window.onload = handleLinkedInCallback;
+  </script>
+</body>
+</html>
