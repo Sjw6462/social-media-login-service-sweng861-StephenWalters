@@ -15,19 +15,23 @@
     <script>
         // LinkedIn Login Button Action
         function onLinkedInLogin() {
-            var linkedinAuthUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78tk4qtmqcm77m&redirect_uri=https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/&scope=r_liteprofile%20r_emailaddress";
-            window.location.href = linkedinAuthUrl;
+            var state = "random_state_string";  // You can generate a random string here
+            var linkedinAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78tk4qtmqcm77m&redirect_uri=https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/&scope=r_liteprofile%20r_emailaddress&state=${state}`;
+            window.location.href = linkedinAuthUrl;  // Redirect user to LinkedIn authorization page
         }
 
-        // Capture the 'code' in the URL after LinkedIn redirects
+        // Capture the 'code' and 'state' in the URL after LinkedIn redirects
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const authCode = urlParams.get('code');
+            const state = urlParams.get('state');  // Capture the 'state' as well
 
             if (authCode) {
                 console.log('LinkedIn authorization code:', authCode);
-                // Here you would send the 'authCode' to your server for token exchange
-                // Example: fetch('your-server-endpoint', { method: 'POST', body: authCode });
+                console.log('State:', state);  // Log the state for debugging
+
+                // Here, you would typically send the 'authCode' to your server for token exchange.
+                // Example: fetch('your-server-endpoint', { method: 'POST', body: { authCode, state } });
             } else {
                 console.log('No authorization code found in the URL');
             }
