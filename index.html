@@ -1,104 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+  <title>Facebook Login JavaScript Example</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Facebook and LinkedIn Login Example</title>
 </head>
 <body>
-  <h1>Facebook and LinkedIn Login Example</h1>
-  
-  <!-- Buttons for Facebook and LinkedIn login -->
-  <button onclick="loginWithFacebook()">Login with Facebook</button>
-  <button onclick="loginWithLinkedIn()">Login with LinkedIn</button>
-  
-  <p id="user-info"></p>
 
-  <!-- Load the Facebook SDK -->
-  <script>
-    // Initialize Facebook SDK
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId: '910567587948158', // Facebook App ID
-        cookie: true,
-        xfbml: true,
-        version: 'v17.0' // Use the latest Graph API version
-      });
-
-      console.log('Facebook SDK initialized.');
-    };
-
-    // Load Facebook SDK script asynchronously
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) { return; }
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-
-    // Facebook login function
-    function loginWithFacebook() {
-      FB.login(function(response) {
-        if (response.authResponse) {
-          console.log('Fetching your Facebook information....');
-          FB.api('/me?fields=name,email', function(user) {
-            if (user.email) {
-              console.log(`Hello, ${user.name}! Your email is ${user.email}.`);
-              sessionStorage.setItem('facebook_token', response.authResponse.accessToken);
-              document.getElementById('user-info').innerText = 
-                `Facebook: Welcome, ${user.name}! Your email is ${user.email}.`;
-            } else {
-              console.log(`Hello, ${user.name}! Your email is undefined.`);
-              alert('We couldn’t access your Facebook email address. Please allow email access during login.');
-            }
-          });
-        } else {
-          alert('Facebook login failed or was canceled.');
-        }
-      }, { scope: 'email' }); // Request email permission
+<script>
+  function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
+    console.log('statusChangeCallback');
+    console.log(response);                   // The current login status of the person.
+    if (response.status === 'connected') {   // Logged into your webpage and Facebook.
+      testAPI();  
+    } else {                                 // Not logged into your webpage or we are unable to tell.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this webpage.';
     }
-  </script>
+  }
 
-  <!-- LinkedIn SDK -->
-  <script>
-    const linkedInClientId = '78tk4qtmqcm77m'; // LinkedIn Client ID
-    const linkedInRedirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/'; // LinkedIn Redirect URI
+  function checkLoginState() {               // Called when a person is finished with the Login Button.
+    FB.getLoginStatus(function(response) {   // See the onlogin handler
+      statusChangeCallback(response);
+    });
+  }
 
-    function loginWithLinkedIn() {
-      const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${linkedInClientId}&redirect_uri=${encodeURIComponent(linkedInRedirectUri)}&scope=r_liteprofile%20r_emailaddress`;
-      window.location.href = linkedInAuthUrl; // Redirect to LinkedIn login page
-    }
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '910567587948158', // Replace with your actual App ID
+      cookie     : true,               // Enable cookies to allow the server to access the session.
+      xfbml      : true,               // Parse social plugins on this webpage.
+      version    : 'v17.0'             // Use this Graph API version for this call.
+    });
 
-    // Handle LinkedIn callback
-    async function handleLinkedInCallback() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      if (code) {
-        try {
-          const response = await fetch('YOUR_BACKEND_API_ENDPOINT', { // Replace with your backend endpoint
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ code, redirectUri: linkedInRedirectUri })
-          });
-          const data = await response.json();
-          if (data.accessToken) {
-            sessionStorage.setItem('linkedin_token', data.accessToken);
-            document.getElementById('user-info').innerText = `LinkedIn: Welcome! Access Token Saved.`;
-          } else {
-            throw new Error('Failed to fetch LinkedIn access token.');
-          }
-        } catch (error) {
-          console.error('LinkedIn login error:', error);
-          alert('Failed to log in with LinkedIn.');
-        }
-      }
-    }
+    FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
+      statusChangeCallback(response);        // Returns the login status.
+    });
+  };
 
-    // Call handleLinkedInCallback when the page loads to process LinkedIn login
-    window.onload = handleLinkedInCallback;
-  </script>
+  function testAPI() {                      // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
+
+</script>
+
+<!-- The JS SDK Login Button -->
+
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
+
+<div id="status">
+</div>
+
+<!-- Load the JS SDK asynchronously -->
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </body>
 </html>
