@@ -75,34 +75,15 @@
         }
 
         function onLinkedInLogin() {
-            // Request the necessary permissions (openid, profile, email)
+            // Authorization request with OpenID Connect and profile/email scopes
             IN.User.authorize(function() {
-                // After successful login, retrieve the ID token
-                IN.API.Raw("/people/~").result(function(profile) {
-                    console.log('LinkedIn profile:', profile);
-
-                    // Optionally, retrieve email and profile information via OpenID Connect
-                    getLinkedInProfile();
+                // Use the LinkedIn API to get the user's profile info (name, email, picture)
+                IN.API.Raw("/people/~:(id,first-name,last-name,email-address,picture-url)").result(function(profile) {
+                    console.log('LinkedIn Profile:', profile);  // Log the LinkedIn profile data
+                    // You can also handle the profile data here (e.g., display user details or redirect)
                 }).error(function(error) {
                     console.log('LinkedIn login error:', error);
                 });
-            });
-        }
-
-        // Fetch LinkedIn profile using OpenID Connect
-        function getLinkedInProfile() {
-            // Make an API call to get the user's profile
-            IN.API.Raw("/v2/me").result(function(profile) {
-                console.log('LinkedIn Profile Information:', profile);
-
-                // Get email using OpenID Connect (requires permissions: email, profile)
-                IN.API.Raw("/v2/emailAddress?q=members&projection=(elements*(handle~))").result(function(emailResponse) {
-                    console.log('LinkedIn Email:', emailResponse);
-                }).error(function(error) {
-                    console.log('Error fetching email:', error);
-                });
-            }).error(function(error) {
-                console.log('Error fetching LinkedIn profile:', error);
             });
         }
     </script>
