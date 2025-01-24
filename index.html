@@ -44,12 +44,12 @@
           console.log('Fetching your Facebook information....');
           FB.api('/me?fields=name,email', function(user) {
             if (user.email) {
-              console.log(Hello, ${user.name}! Your email is ${user.email}.);
+              console.log(`Hello, ${user.name}! Your email is ${user.email}.`);
               sessionStorage.setItem('facebook_token', response.authResponse.accessToken);
               document.getElementById('user-info').innerText = 
-                Facebook: Welcome, ${user.name}! Your email is ${user.email}.;
+                `Facebook: Welcome, ${user.name}! Your email is ${user.email}.`;
             } else {
-              console.log(Hello, ${user.name}! Your email is undefined.);
+              console.log(`Hello, ${user.name}! Your email is undefined.`);
               alert('We couldn’t access your Facebook email address. Please allow email access during login.');
             }
           });
@@ -66,7 +66,7 @@
     const linkedInRedirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/'; // LinkedIn Redirect URI
 
     function loginWithLinkedIn() {
-      const linkedInAuthUrl = https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${linkedInClientId}&redirect_uri=${encodeURIComponent(linkedInRedirectUri)}&scope=r_liteprofile%20r_emailaddress;
+      const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${linkedInClientId}&redirect_uri=${encodeURIComponent(linkedInRedirectUri)}&scope=r_liteprofile%20r_emailaddress`;
       window.location.href = linkedInAuthUrl; // Redirect to LinkedIn login page
     }
 
@@ -86,7 +86,7 @@
           const data = await response.json();
           if (data.accessToken) {
             sessionStorage.setItem('linkedin_token', data.accessToken);
-            document.getElementById('user-info').innerText = LinkedIn: Welcome! Access Token Saved.;
+            document.getElementById('user-info').innerText = 'LinkedIn: Welcome! Access Token Saved.';
           } else {
             throw new Error('Failed to fetch LinkedIn access token.');
           }
