@@ -21,6 +21,9 @@
       // Build the LinkedIn OAuth URL
       const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
 
+      // Log the URL to check if 'client_id' is passed correctly
+      console.log(authUrl);
+
       // Redirect the user to the LinkedIn authorization page
       window.location.href = authUrl;
     };
