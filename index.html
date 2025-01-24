@@ -3,63 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook Login Test</title>
+    <title>LinkedIn Login Integration</title>
+    <style>
+        .linkedin-button {
+            background-color: #0077b5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .linkedin-button:hover {
+            background-color: #005983;
+        }
+    </style>
 </head>
 <body>
-
-    <button id="fb-login-btn">Login with Facebook</button>
-    <div id="email"></div>
-
-    <!-- Facebook SDK -->
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <h1>Welcome to LinkedIn Login Integration</h1>
+    <button class="linkedin-button" onclick="redirectToLinkedIn()">Sign in with LinkedIn</button>
 
     <script>
-        // Initialize the Facebook SDK
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '910567587948158',  // Your app ID here
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v15.0'  // Use the latest version of the API
-            });
+        // Replace with your actual LinkedIn Client ID and Redirect URI
+        const clientId = "78tk4qtmqcm77m";
+        const redirectUri = "https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/";
 
-            // Check the login status when the page loads
-            FB.getLoginStatus(function(response) {
-                statusChangeCallback(response);
-            });
-        };
-
-        // Handle login button click
-        document.getElementById('fb-login-btn').addEventListener('click', function() {
-            FB.login(function(response) {
-                if (response.authResponse) {
-                    statusChangeCallback(response);
-                } else {
-                    console.log('User cancelled login or did not fully authorize.');
-                }
-            }, { scope: 'email' }); // Request email permission
-        });
-
-        // Callback function to handle login status
-        function statusChangeCallback(response) {
-            console.log('Facebook login response:', response);
-
-            if (response.status === 'connected') {
-                // Logged into Facebook, get the user's email
-                FB.api('/me', {fields: 'email'}, function(response) {
-                    if (response && response.email) {
-                        console.log('User email:', response.email);
-                        document.getElementById('email').innerText = 'Email: ' + response.email;
-                    } else {
-                        console.log('Email not found or permission denied.');
-                        document.getElementById('email').innerText = 'Email permission denied or email not available.';
-                    }
-                });
-            } else {
-                document.getElementById('email').innerText = 'Please log in to Facebook.';
-            }
+        function redirectToLinkedIn() {
+            const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=r_liteprofile%20r_emailaddress%20w_member_social`;
+            window.location.href = authUrl;
         }
     </script>
-
 </body>
 </html>
