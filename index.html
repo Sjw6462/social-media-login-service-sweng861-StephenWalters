@@ -1,97 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Media Login Service</title>
-
-    <!-- LinkedIn SDK -->
-    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
-        api_key: 78tk4qtmqcm77m  <!-- LinkedIn Client ID -->
-        authorize: true
-        onLoad: onLinkedInLoad
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook and LinkedIn Login</title>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '910567587948158', // Facebook App ID
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v12.0'
+      });
+    };
+  </script>
+  <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <script type="text/javascript" src="https://platform.linkedin.com/in.js">
+    api_key: 78tk4qtmqcm77m
+    authorize: true
+    onLoad: onLinkedInLoad
+  </script>
+  <style>
+    button {
+      font-size: 18px;
+      padding: 15px;
+      margin: 20px;
+      width: 250px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
+  <h1>Login</h1>
 
-    <h2>Login with Facebook</h2>
+  <!-- Facebook Login -->
+  <button id="facebook-login">Login with Facebook</button>
+  <div id="facebook-user-info"></div>
 
-    <!-- Facebook Login Button -->
-    <fb:login-button 
-        scope="public_profile,email" 
-        onlogin="checkLoginState();">
-    </fb:login-button>
-
-    <h2>Login with LinkedIn</h2>
-
-    <!-- LinkedIn Login Button -->
-    <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
-
-    <script>
-        // Facebook SDK Initialization
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '910567587948158',  // Facebook App ID
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v22.0'  // Use correct Facebook API version
-            });
-            FB.AppEvents.logPageView();   
-        };
-
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-        // Facebook Login Status Check
-        function checkLoginState() {
-            FB.getLoginStatus(function(response) {
-                statusChangeCallback(response);
-            });
+  <script>
+    document.getElementById('facebook-login').onclick = function() {
+      FB.login(function(response) {
+        if (response.authResponse) {
+          FB.api('/me', { fields: 'name,email' }, function(response) {
+            document.getElementById('facebook-user-info').innerText = 
+              `Hello, ${response.name}! Your email is ${response.email}.`;
+          });
+        } else {
+          alert('User cancelled login or did not fully authorize.');
         }
+      });
+    };
+  </script>
 
-        function statusChangeCallback(response) {
-            console.log('Facebook login status:', response);
-            if (response.status === 'connected') {
-                console.log('Successfully logged in with Facebook');
-                // Optionally, retrieve user info or redirect user
-                FB.api('/me', { fields: 'id,name,email' }, function(response) {
-                    console.log('Logged in user:', response);
-                    // Redirect or handle user data here
-                });
-            } else if (response.status === 'not_authorized') {
-                console.log('User is logged in to Facebook but has not authorized the app');
-                // Prompt user to authorize the app
-            } else {
-                console.log('User is not logged into Facebook');
-                // Prompt user to log in
-            }
-        }
+  <!-- LinkedIn Login -->
+  <script type="IN/Login" data-onAuth="onLinkedInAuth"></script>
+  <div id="linkedin-user-info"></div>
 
-        // LinkedIn SDK Initialization and Login
-        function onLinkedInLoad() {
-            IN.Event.on(IN, 'systemReady', onLinkedInReady);
-        }
-
-        function onLinkedInReady() {
-            console.log("LinkedIn SDK is ready!");
-        }
-
-        function onLinkedInLogin() {
-            IN.User.authorize(function() {
-                IN.API.Raw("/people/~").result(function(profile) {
-                    console.log('LinkedIn Profile:', profile);  // Log the LinkedIn profile data
-                    // Handle the LinkedIn profile data, e.g., redirect or fetch additional info
-                }).error(function(error) {
-                    console.log('LinkedIn login error:', error);
-                });
-            });
-        }
-    </script>
-
+  <script>
+    function onLinkedInAuth() {
+      IN.API.Raw("/people/~:(first-name,last-name,email-address)").result(function(profile) {
+        document.getElementById('linkedin-user-info').innerText = 
+          `Hello, ${profile.firstName} ${profile.lastName}! Your email is ${profile.emailAddress}.`;
+      });
+    }
+  </script>
 </body>
 </html>
