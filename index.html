@@ -74,17 +74,10 @@
             console.log("LinkedIn SDK is ready!");
         }
 
+        // Updated LinkedIn login function with the redirect URL
         function onLinkedInLogin() {
-            // Authorization request with OpenID Connect and profile/email scopes
-            IN.User.authorize(function() {
-                // Use the LinkedIn API to get the user's profile info (name, email, picture)
-                IN.API.Raw("/people/~:(id,first-name,last-name,email-address,picture-url)").result(function(profile) {
-                    console.log('LinkedIn Profile:', profile);  // Log the LinkedIn profile data
-                    // You can also handle the profile data here (e.g., display user details or redirect)
-                }).error(function(error) {
-                    console.log('LinkedIn login error:', error);
-                });
-            });
+            // OAuth request with redirect_uri pointing to the same URL you added in the LinkedIn Developer Console
+            window.location.href = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78tk4qtmqcm77m&redirect_uri=https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/&state=xyz";
         }
     </script>
 
