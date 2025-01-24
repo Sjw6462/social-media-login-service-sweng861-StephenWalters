@@ -4,8 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Login Service</title>
+
+    <!-- LinkedIn SDK -->
+    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
+        api_key: '78tk4qtmqcm77m'  <!-- LinkedIn Client ID -->
+        authorize: true
+        onLoad: onLinkedInLoad
+    </script>
 </head>
 <body>
+
+    <h2>Login with Facebook</h2>
+
+    <!-- Facebook Login Button -->
+    <fb:login-button 
+        scope="public_profile,email" 
+        onlogin="checkLoginState();">
+    </fb:login-button>
 
     <h2>Login with LinkedIn</h2>
 
@@ -13,29 +28,64 @@
     <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
 
     <script>
-        // LinkedIn Login Button Action
-        function onLinkedInLogin() {
-            var state = "random_state_string";  // You can generate a random string here
-            var linkedinAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78tk4qtmqcm77m&redirect_uri=https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/&scope=r_liteprofile%20r_emailaddress&state=${state}`;
-            window.location.href = linkedinAuthUrl;  // Redirect user to LinkedIn authorization page
+        // Facebook SDK Initialization
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '910567587948158',  // Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v12.0'  // Use correct Facebook API version
+            });
+            FB.AppEvents.logPageView();   
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // Facebook Login Status Check
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                statusChangeCallback(response);
+            });
         }
 
-        // Capture the 'code' and 'state' in the URL after LinkedIn redirects
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const authCode = urlParams.get('code');
-            const state = urlParams.get('state');  // Capture the 'state' as well
-
-            if (authCode) {
-                console.log('LinkedIn authorization code:', authCode);
-                console.log('State:', state);  // Log the state for debugging
-
-                // Here, you would typically send the 'authCode' to your server for token exchange.
-                // Example: fetch('your-server-endpoint', { method: 'POST', body: { authCode, state } });
+        function statusChangeCallback(response) {
+            console.log('Facebook login status:', response);
+            if (response.status === 'connected') {
+                console.log('Successfully logged in with Facebook');
+                // Optionally, retrieve user info or redirect user
             } else {
-                console.log('No authorization code found in the URL');
+                console.log('User not logged in');
+                // Prompt user to log in or display a message
             }
-        };
+        }
+
+        // LinkedIn SDK Initialization and Login
+        function onLinkedInLoad() {
+            IN.Event.on(IN, 'systemReady', onLinkedInReady);
+        }
+
+        function onLinkedInReady() {
+            console.log("LinkedIn SDK is ready!");
+        }
+
+        function onLinkedInLogin() {
+            // Authorization request with OpenID Connect and profile/email scopes
+            IN.User.authorize(function() {
+                // Use the LinkedIn API to get the user's profile info (name, email, picture)
+                IN.API.Raw("/people/~:(id,first-name,last-name,email-address,picture-url)").result(function(profile) {
+                    console.log('LinkedIn Profile:', profile);  // Log the LinkedIn profile data
+                    // You can also handle the profile data here (e.g., display user details or redirect)
+                }).error(function(error) {
+                    console.log('LinkedIn login error:', error);
+                });
+            });
+        }
     </script>
 
 </body>
