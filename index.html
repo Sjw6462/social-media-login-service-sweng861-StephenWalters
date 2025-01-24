@@ -3,72 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Facebook and LinkedIn Login</title>
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '910567587948158', // Facebook App ID
-        cookie     : true,
-        xfbml      : true,
-        version    : 'v12.0'
-      });
-    };
-  </script>
-  <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
-  <script type="text/javascript" src="https://platform.linkedin.com/in.js">
-    api_key: 78tk4qtmqcm77m
-    authorize: true
-    onLoad: onLinkedInLoad
-  </script>
-  <style>
-    button {
-      font-size: 18px;
-      padding: 15px;
-      margin: 20px;
-      width: 250px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+  <title>Facebook Login Example</title>
 </head>
 <body>
-  <h1>Login</h1>
+  <h1>Facebook Login Example</h1>
+  <button onclick="loginWithFacebook()">Login with Facebook</button>
+  <p id="user-info"></p>
 
-  <!-- Facebook Login -->
-  <button id="facebook-login">Login with Facebook</button>
-  <div id="facebook-user-info"></div>
-
+  <!-- Load the Facebook SDK -->
   <script>
-    document.getElementById('facebook-login').onclick = function() {
+    // Load the Facebook SDK
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: 'YOUR_APP_ID', // Replace with your Facebook App ID
+        cookie: true,
+        xfbml: true,
+        version: 'v17.0' // Use the latest Graph API version
+      });
+
+      console.log('Facebook SDK initialized.');
+    };
+
+    // Load Facebook SDK script
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    // Facebook login function
+    function loginWithFacebook() {
       FB.login(function(response) {
         if (response.authResponse) {
-          FB.api('/me', { fields: 'name,email' }, function(response) {
-            document.getElementById('facebook-user-info').innerText = 
-              `Hello, ${response.name}! Your email is ${response.email}.`;
+          console.log('Fetching your information....');
+          FB.api('/me?fields=name,email', function(user) {
+            if (user.email) {
+              console.log(`Hello, ${user.name}! Your email is ${user.email}.`);
+              sessionStorage.setItem('token', response.authResponse.accessToken);
+              document.getElementById('user-info').innerText = 
+                `Welcome, ${user.name}! Your email is ${user.email}.`;
+            } else {
+              console.log(`Hello, ${user.name}! Your email is undefined.`);
+              alert('We couldn’t access your email address. Please allow email access during login.');
+            }
           });
         } else {
-          alert('User cancelled login or did not fully authorize.');
+          alert('Facebook login failed or was canceled.');
         }
-      });
-    };
-  </script>
-
-  <!-- LinkedIn Login -->
-  <script type="IN/Login" data-onAuth="onLinkedInAuth"></script>
-  <div id="linkedin-user-info"></div>
-
-  <script>
-    function onLinkedInAuth() {
-      IN.API.Raw("/people/~:(first-name,last-name,email-address)").result(function(profile) {
-        document.getElementById('linkedin-user-info').innerText = 
-          `Hello, ${profile.firstName} ${profile.lastName}! Your email is ${profile.emailAddress}.`;
-      });
+      }, { scope: 'email' }); // Request email permission
     }
   </script>
 </body>
