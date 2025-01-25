@@ -18,3 +18,14 @@ This project was a way to test me and teach me how to integrate social media log
 - Backend: Node.js, Express.js
 - Authentication: LinkedIn and Facebook OAuth
 - Environment Configuration: dotenv
+
+## Usage
+LinkedIn Login:
+- Click on the "Log in with LinkedIn" button.
+- Authenticate with your LinkedIn credentials.
+- Monitor the browser console for success messages or user data.
+
+Facebook Login:
+- Click on the "Log in with Facebook" button.
+- Authenticate with your Facebook credentials.
+- Monitor the browser console for success messages or user data.
