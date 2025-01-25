@@ -2,14 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors()); // Enable CORS for cross-origin requests
 
 const PORT = 3000;
 
+// LinkedIn OAuth callback
 app.get('/linkedin/callback', async (req, res) => {
     const authorizationCode = req.query.code;
 
@@ -31,13 +34,9 @@ app.get('/linkedin/callback', async (req, res) => {
         const accessToken = response.data.access_token;
         res.json({ accessToken });
     } catch (error) {
-        console.error('Error exchanging authorization code:', error);
+        console.error('Error exchanging authorization code for LinkedIn:', error.response?.data || error.message);
         res.status(500).send('Internal Server Error');
     }
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 // Facebook OAuth callback
@@ -49,7 +48,7 @@ app.get('/facebook/callback', async (req, res) => {
     }
 
     try {
-        const response = await axios.get('https://graph.facebook.com/v12.0/oauth/access_token', {
+        const response = await axios.get('https://graph.facebook.com/v17.0/oauth/access_token', {
             params: {
                 client_id: process.env.FACEBOOK_CLIENT_ID,
                 redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
@@ -60,7 +59,7 @@ app.get('/facebook/callback', async (req, res) => {
 
         const accessToken = response.data.access_token;
 
-        // Now use this access token to fetch user info
+        // Fetch user info using the access token
         const userResponse = await axios.get('https://graph.facebook.com/me', {
             params: {
                 access_token: accessToken,
@@ -68,17 +67,17 @@ app.get('/facebook/callback', async (req, res) => {
             },
         });
 
-        // Send user data back to frontend
         res.json({
             platform: 'Facebook',
             profile: userResponse.data,
         });
     } catch (error) {
-        console.error('Error exchanging authorization code for Facebook:', error);
+        console.error('Error exchanging authorization code for Facebook:', error.response?.data || error.message);
         res.status(500).send('Internal Server Error');
     }
 });
 
+// Single app.listen call
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
