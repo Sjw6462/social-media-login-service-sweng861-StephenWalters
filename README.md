@@ -2,10 +2,6 @@
 
 A web application that provides OAuth-based login functionality for LinkedIn and Facebook.
 
-## Table of Contents
-1. [Overview](#overview)
-2. [Features](#features)
-3. [Technologies Used](#technologies-used)
 
 ## Overview
 This project demonstrates how to integrate social media login functionalities using LinkedIn and Facebook OAuth. The application includes a backend server for handling authorization and a frontend interface for user interactions.
