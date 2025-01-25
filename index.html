@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Login Service</title>
-
-    <!-- LinkedIn SDK -->
-    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
-        api_key: 78tk4qtmqcm77m
-        authorize: true
-        onLoad: onLinkedInLoad
-    </script>
 </head>
 <body>
     <h2>Login with Facebook</h2>
@@ -67,20 +60,11 @@
             }
         }
 
-        // LinkedIn SDK Initialization and Login
-        function onLinkedInLoad() {
-            IN.Event.on(IN, 'systemReady', onLinkedInReady);
-        }
-
-        function onLinkedInReady() {
-            console.log("LinkedIn SDK is ready!");
-        }
-
+        // LinkedIn OAuth 2.0 Manual Login Flow
         function onLinkedInLogin() {
             console.log('Initiating LinkedIn login...');
             const clientId = '78tk4qtmqcm77m';
-            const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/'; // Change to match your server callback URL
-
+            const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
             const scope = 'r_liteprofile r_emailaddress';
 
             // Authorization request
