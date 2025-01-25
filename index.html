@@ -4,28 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Login Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+        }
 
-    <!-- LinkedIn SDK -->
-    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
-        api_key: 78tk4qtmqcm77m
-        authorize: true
-        onLoad: onLinkedInLoad
-    </script>
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        button, .fb-login-button {
+            display: block;
+            margin: 1rem auto;
+            padding: 0.7rem 1.5rem;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #0073b1; /* LinkedIn Blue */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005a87;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .fb-login-button {
+            width: auto !important;
+            background-color: #4267B2 !important; /* Facebook Blue */
+            border-radius: 8px;
+        }
+
+        .icon {
+            margin-right: 0.5rem;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h2>Login with Facebook</h2>
+        <fb:login-button 
+            scope="public_profile,email" 
+            onlogin="checkLoginState();">
+        </fb:login-button>
 
-    <h2>Login with Facebook</h2>
-
-    <!-- Facebook Login Button -->
-    <fb:login-button 
-        scope="public_profile,email" 
-        onlogin="checkLoginState();">
-    </fb:login-button>
-
-    <h2>Login with LinkedIn</h2>
-
-    <!-- LinkedIn Login Button -->
-    <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
+        <h2>Login with LinkedIn</h2>
+        <button onclick="onLinkedInLogin()">
+            <i class="fab fa-linkedin icon"></i>Log in with LinkedIn
+        </button>
+    </div>
 
     <script>
         // Facebook SDK Initialization
@@ -93,8 +144,5 @@
             window.location.href = authUrl;
         }
     </script>
-
-
-    
 </body>
 </html>
