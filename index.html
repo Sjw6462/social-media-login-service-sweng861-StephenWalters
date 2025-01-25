@@ -11,90 +11,214 @@
         authorize: true
         onLoad: onLinkedInLoad
     </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .container {
+            display: flex;
+            width: 800px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 30px;
+            flex: 1;
+        }
+
+        .welcome-section {
+            flex: 1;
+            background: #00f2fe;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 30px;
+        }
+
+        .welcome-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-section h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0072ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #005bb5;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-buttons button {
+            flex: 1;
+            background: #ddd;
+            color: #333;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .social-buttons button:hover {
+            background: #ccc;
+        }
+
+        .form-footer {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .form-footer a {
+            color: #0072ff;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-    <h2>Login with Facebook</h2>
+<div class="container">
+    <div class="form-section">
+        <h2>Sign In</h2>
+        <input type="email" placeholder="Email Address" />
+        <input type="password" placeholder="Password" />
+        <button>Login</button>
 
-    <!-- Facebook Login Button -->
-    <fb:login-button 
-        scope="public_profile,email" 
-        onlogin="checkLoginState();">
-    </fb:login-button>
+        <div class="social-buttons">
+            <button onclick="checkLoginState()">Login with Facebook</button>
+            <button onclick="onLinkedInLogin()">Login with LinkedIn</button>
+        </div>
 
-    <h2>Login with LinkedIn</h2>
+        <div class="form-footer">
+            <p>Don't have an account? <a href="#">Sign Up</a></p>
+        </div>
+    </div>
 
-    <!-- LinkedIn Login Button -->
-    <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
+    <div class="welcome-section">
+        <h2>Welcome to my website!</h2>
+        <p>Login to your account using your preferred social platform.</p>
+    </div>
+</div>
 
-    <script>
-        // Facebook SDK Initialization
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '910567587948158',  // Your Facebook App ID
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v12.0'  // Ensure correct Facebook API version
+<script>
+    // Facebook SDK Initialization
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '910567587948158',  // Your Facebook App ID
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v12.0'  // Ensure correct Facebook API version
+        });
+        FB.AppEvents.logPageView();   
+    };
+
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    // Facebook Login Status Check
+    function checkLoginState() {
+        FB.getLoginStatus(function(response) {
+            statusChangeCallback(response);
+        });
+    }
+
+    function statusChangeCallback(response) {
+        console.log('Facebook login status:', response);
+        if (response.status === 'connected') {
+            console.log('Successfully logged in with Facebook');
+            
+            // Retrieve user information
+            FB.api('/me', { fields: 'id,name,email,picture' }, function(userInfo) {
+                console.log('User Info:', userInfo);
+                alert(`Welcome ${userInfo.name}!`);
             });
-            FB.AppEvents.logPageView();   
-        };
 
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-        // Facebook Login Status Check
-        function checkLoginState() {
-            FB.getLoginStatus(function(response) {
-                statusChangeCallback(response);
-            });
+        } else {
+            console.log('User not logged in');
         }
+    }
 
-        function statusChangeCallback(response) {
-            console.log('Facebook login status:', response);
-            if (response.status === 'connected') {
-                console.log('Successfully logged in with Facebook');
-                
-                // Retrieve user information
-                FB.api('/me', { fields: 'id,name,email,picture' }, function(userInfo) {
-                    console.log('User Info:', userInfo);
-                    alert(`Welcome ${userInfo.name}!`);
-                });
+    // LinkedIn SDK Initialization and Login
+    function onLinkedInLoad() {
+        IN.Event.on(IN, 'systemReady', onLinkedInReady);
+    }
 
-            } else {
-                console.log('User not logged in');
-            }
-        }
+    function onLinkedInReady() {
+        console.log("LinkedIn SDK is ready!");
+    }
 
-        // LinkedIn SDK Initialization and Login
-        function onLinkedInLoad() {
-            IN.Event.on(IN, 'systemReady', onLinkedInReady);
-        }
+    function onLinkedInLogin() {
+        console.log('Initiating LinkedIn login...');
+        const clientId = '78tk4qtmqcm77m';
+        const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
 
-        function onLinkedInReady() {
-            console.log("LinkedIn SDK is ready!");
-        }
+        // Updated scopes to align with your app's configuration
+        const scope = 'openid profile email';
 
-        function onLinkedInLogin() {
-            console.log('Initiating LinkedIn login...');
-            const clientId = '78tk4qtmqcm77m';
-            const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
+        // Authorization request
+        const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+        console.log('Redirecting to:', authUrl);
+        window.location.href = authUrl;
+    }
+</script>
 
-            // Updated scopes to align with your app's configuration
-            const scope = 'openid profile email';
-
-            // Authorization request
-            const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
-            console.log('Redirecting to:', authUrl);
-            window.location.href = authUrl;
-        }
-    </script>
-
-
-    
 </body>
 </html>
