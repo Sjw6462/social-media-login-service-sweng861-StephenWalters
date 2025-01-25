@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 
 const PORT = 3000;
 
+// LinkedIn OAuth callback
 app.get('/linkedin/callback', async (req, res) => {
     const authorizationCode = req.query.code;
 
@@ -18,7 +19,8 @@ app.get('/linkedin/callback', async (req, res) => {
     }
 
     try {
-        const response = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
+        // Step 1: Exchange authorization code for access token
+        const tokenResponse = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
             params: {
                 grant_type: 'authorization_code',
                 code: authorizationCode,
@@ -28,16 +30,43 @@ app.get('/linkedin/callback', async (req, res) => {
             },
         });
 
-        const accessToken = response.data.access_token;
-        res.json({ accessToken });
+        const accessToken = tokenResponse.data.access_token;
+
+        // Step 2: Fetch user profile data
+        const profileResponse = await axios.get('https://api.linkedin.com/v2/me', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        const profileData = profileResponse.data;
+
+        // Step 3: Fetch user email
+        const emailResponse = await axios.get(
+            'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))',
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        const emailData = emailResponse.data;
+        const emailAddress = emailData.elements[0]['handle~'].emailAddress;
+
+        // Respond with user data
+        res.json({
+            platform: 'LinkedIn',
+            profile: {
+                firstName: profileData.localizedFirstName,
+                lastName: profileData.localizedLastName,
+                email: emailAddress,
+            },
+        });
     } catch (error) {
-        console.error('Error exchanging authorization code:', error);
+        console.error('Error during LinkedIn login:', error.response?.data || error.message);
         res.status(500).send('Internal Server Error');
     }
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 // Facebook OAuth callback
