@@ -13,9 +13,7 @@
     </script>
 </head>
 <body>
-
     <h2>Login with Facebook</h2>
-
     <!-- Facebook Login Button -->
     <fb:login-button 
         scope="public_profile,email" 
@@ -23,7 +21,6 @@
     </fb:login-button>
 
     <h2>Login with LinkedIn</h2>
-
     <!-- LinkedIn Login Button -->
     <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
 
@@ -82,10 +79,9 @@
         function onLinkedInLogin() {
             console.log('Initiating LinkedIn login...');
             const clientId = '78tk4qtmqcm77m';
-            const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
+            const redirectUri = 'http://localhost:3000/linkedin/callback'; // Change to match your server callback URL
 
-            // Updated scopes to align with your app's configuration
-            const scope = 'openid profile email';
+            const scope = 'r_liteprofile r_emailaddress';
 
             // Authorization request
             const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
@@ -93,8 +89,5 @@
             window.location.href = authUrl;
         }
     </script>
-
-
-    
 </body>
 </html>
