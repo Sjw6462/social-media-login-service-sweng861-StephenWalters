@@ -1,89 +1,101 @@
-require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const passport = require('passport');
-const FacebookStrategy = require('passport-facebook').Strategy;
-const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
-const session = require('express-session');
+const dotenv = require('dotenv');
 
-// Initialize Express app
+dotenv.config();
+
 const app = express();
 app.use(bodyParser.json());
-app.use(session({ secret: 'secret-key', resave: false, saveUninitialized: true }));
-app.use(passport.initialize());
-app.use(passport.session());
 
-// Configure Facebook Passport Strategy
-passport.use(new FacebookStrategy({
-  clientID: process.env.FACEBOOK_CLIENT_ID,
-  clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-  callbackURL: process.env.FACEBOOK_REDIRECT_URI,
-  profileFields: ['id', 'displayName', 'email']
-}, (accessToken, refreshToken, profile, done) => {
-  return done(null, { profile, accessToken });
-}));
+const PORT = 3000;
 
-// Configure LinkedIn Passport Strategy
-passport.use(new LinkedInStrategy({
-  clientID: process.env.LINKEDIN_CLIENT_ID,
-  clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-  callbackURL: process.env.LINKEDIN_REDIRECT_URI,
-  scope: ['r_emailaddress', 'r_liteprofile'],
-}, (accessToken, refreshToken, profile, done) => {
-  return done(null, { profile, accessToken });
-}));
-
-// Serialize user info to session
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-// Deserialize user info from session
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
-
-// Routes for Facebook and LinkedIn login
-app.get('/auth/facebook', passport.authenticate('facebook'));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }), (req, res) => {
-  res.redirect('/profile');
-});
-
-app.get('/auth/linkedin', passport.authenticate('linkedin'));
-app.get('/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: '/' }), (req, res) => {
-  res.redirect('/profile');
-});
-
-// Profile route to display user info
-app.get('/profile', (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/');
+// Facebook OAuth callback with error handling
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }), function(req, res) {
+  try {
+    res.redirect('/profile');
+  } catch (error) {
+    console.error('Facebook authentication error:', error);
+    res.status(500).send('There was an error processing your Facebook login. Please try again later.');
   }
-  res.json(req.user);
 });
 
-// Logout route
-app.get('/logout', (req, res) => {
-  req.logout((err) => {
-    if (err) return next(err);
-    res.redirect('/');
-  });
+// LinkedIn OAuth callback with error handling
+app.get('/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: '/' }), function(req, res) {
+  try {
+    res.redirect('/profile');
+  } catch (error) {
+    console.error('LinkedIn authentication error:', error);
+    res.status(500).send('There was an error processing your LinkedIn login. Please try again later.');
+  }
 });
 
-// Main landing page with links to login via Facebook or LinkedIn
-app.get('/', (req, res) => {
-  res.send(`
-    <h2>Login with Facebook</h2>
-    <a href="/auth/facebook">Login with Facebook</a>
+// LinkedIn OAuth custom callback route
+app.get('/linkedin/callback', async (req, res) => {
+    const authorizationCode = req.query.code;
 
-    <h2>Login with LinkedIn</h2>
-    <a href="/auth/linkedin">Login with LinkedIn</a>
-  `);
+    if (!authorizationCode) {
+        return res.status(400).send('Authorization code is missing');
+    }
+
+    try {
+        const response = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
+            params: {
+                grant_type: 'authorization_code',
+                code: authorizationCode,
+                redirect_uri: process.env.LINKEDIN_REDIRECT_URI,
+                client_id: process.env.LINKEDIN_CLIENT_ID,
+                client_secret: process.env.LINKEDIN_CLIENT_SECRET,
+            },
+        });
+
+        const accessToken = response.data.access_token;
+        res.json({ accessToken });
+    } catch (error) {
+        console.error('Error exchanging authorization code for LinkedIn:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
+// Facebook OAuth callback with user info retrieval
+app.get('/facebook/callback', async (req, res) => {
+    const authorizationCode = req.query.code;
+
+    if (!authorizationCode) {
+        return res.status(400).send('Authorization code is missing');
+    }
+
+    try {
+        const response = await axios.get('https://graph.facebook.com/v12.0/oauth/access_token', {
+            params: {
+                client_id: process.env.FACEBOOK_CLIENT_ID,
+                redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
+                client_secret: process.env.FACEBOOK_CLIENT_SECRET,
+                code: authorizationCode,
+            },
+        });
+
+        const accessToken = response.data.access_token;
+
+        // Fetch user info with the access token
+        const userResponse = await axios.get('https://graph.facebook.com/me', {
+            params: {
+                access_token: accessToken,
+                fields: 'id,name,email,picture',
+            },
+        });
+
+        // Send user data back to frontend
+        res.json({
+            platform: 'Facebook',
+            profile: userResponse.data,
+        });
+    } catch (error) {
+        console.error('Error exchanging authorization code for Facebook:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
