@@ -4,7 +4,7 @@ A web application that provides OAuth-based login functionality for LinkedIn and
 
 
 ## Overview
-This project demonstrates how to integrate social media login functionalities using LinkedIn and Facebook OAuth. The application includes a backend server for handling authorization and a frontend interface for user interactions.
+This project was a way to test me and teach me how to integrate social media login functionalities using LinkedIn and Facebook OAuth. The application includes a backend server for handling authorization and a frontend interface for user interactions.
 
 ## Features
 - LinkedIn OAuth login
@@ -18,9 +18,3 @@ This project demonstrates how to integrate social media login functionalities us
 - Backend: Node.js, Express.js
 - Authentication: LinkedIn and Facebook OAuth
 - Environment Configuration: dotenv
-
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/social-media-login-service.git
-   cd social-media-login-service
