@@ -4,18 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Login Service</title>
-
-    <!-- LinkedIn SDK -->
-    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
-        api_key: '78tk4qtmqcm77m'  <!-- LinkedIn Client ID -->
-        authorize: true
-        onLoad: onLinkedInLoad
-    </script>
 </head>
 <body>
-
     <h2>Login with Facebook</h2>
-
     <!-- Facebook Login Button -->
     <fb:login-button 
         scope="public_profile,email" 
@@ -23,7 +14,6 @@
     </fb:login-button>
 
     <h2>Login with LinkedIn</h2>
-
     <!-- LinkedIn Login Button -->
     <button onclick="onLinkedInLogin()">Log in with LinkedIn</button>
 
@@ -31,10 +21,10 @@
         // Facebook SDK Initialization
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '910567587948158',  // Facebook App ID
+                appId      : '910567587948158',  // Your Facebook App ID
                 cookie     : true,
                 xfbml      : true,
-                version    : 'v12.0'  // Use correct Facebook API version
+                version    : 'v12.0'  // Ensure correct Facebook API version
             });
             FB.AppEvents.logPageView();   
         };
@@ -58,32 +48,35 @@
             console.log('Facebook login status:', response);
             if (response.status === 'connected') {
                 console.log('Successfully logged in with Facebook');
-                // Optionally, retrieve user info or redirect user
+                
+                // Retrieve user information
+                FB.api('/me', { fields: 'id,name,email,picture' }, function(userInfo) {
+                    console.log('User Info:', userInfo);
+                    alert(`Welcome ${userInfo.name}!`);
+                });
+
             } else {
                 console.log('User not logged in');
-                // Prompt user to log in or display a message
             }
         }
 
-        // LinkedIn SDK Initialization and Login
-        function onLinkedInLoad() {
-            IN.Event.on(IN, 'systemReady', onLinkedInReady);
-        }
-
-        function onLinkedInReady() {
-            console.log("LinkedIn SDK is ready!");
-        }
-
+        // LinkedIn OAuth 2.0 Manual Login Flow
         function onLinkedInLogin() {
-            // Replace 'your_linkedin_client_id' with your actual LinkedIn Client ID
+            console.log('Initiating LinkedIn login...');
             const clientId = '78tk4qtmqcm77m';
+<<<<<<< HEAD
 	    const redirectUri = 'http://localhost:3000/callback';
             const scope = 'r_liteprofile%20r_emailaddress';  // Requesting basic profile and email access
+=======
+            const redirectUri = 'https://sjw6462.github.io/social-media-login-service-sweng861-StephenWalters/';
+            const scope = 'r_liteprofile r_emailaddress';
+>>>>>>> 1dc746bc78770c9008aa8ff0971398c18af5db25
 
-            // Authorization request with OpenID Connect and profile/email scopes
-            window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+            // Authorization request
+            const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+            console.log('Redirecting to:', authUrl);
+            window.location.href = authUrl;
         }
     </script>
-
 </body>
 </html>
